@@ -1,0 +1,44 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Bytecode de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribución / empaquetado
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Variables de entorno / secretos
+.env
+.env.local
+*.env
+
+# Bases de datos locales (si usas SQLite)
+*.db
+*.sqlite3
+
+# Cache y herramientas
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.swp
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
