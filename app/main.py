@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException, Response, status
 
 
-from app.database import products_db
+from app.database import products_db, categories_db
 
 from app.schemas import Product, ProductCreate, ProductUpdate
+from app.schemas import Category, CategoryCreate, CategoryUpdate
 
 app = FastAPI(
     title="Product API",
@@ -13,7 +14,7 @@ app = FastAPI(
 
 @app.get("/")
 def root():
-    return {"message": "Hello, World! api Functional!"}
+    return {"message": "Hello, World! api Functional aqui santiago buitrago goyeneche!"}
 
 
 @app.get("/products/", response_model=list[Product])
@@ -95,3 +96,68 @@ def delete_product(product_id: int):
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+# ---------------------------------------------------------------------------
+# Endpoints de Categorías (Actividad Autónoma - API de Categorías, Módulo III)
+# ---------------------------------------------------------------------------
+
+def get_next_category_id() -> int:
+    if not categories_db:
+        return 1
+    return max(category["id"] for category in categories_db) + 1
+
+
+@app.get("/categories", response_model=list[Category])
+def get_categories(active: bool | None = None, search: str | None = None):
+    result = categories_db
+
+    if active is not None:
+        result = [category for category in result if category["active"] == active]
+
+    if search is not None:
+        result = [
+            category
+            for category in result
+            if search.lower() in category["name"].lower()
+        ]
+
+    return result
+
+
+@app.get("/categories/{category_id}", response_model=Category)
+def get_category(category_id: int):
+    category = next((c for c in categories_db if c["id"] == category_id), None)
+    if category is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return category
+
+
+@app.post("/categories", response_model=Category, status_code=status.HTTP_201_CREATED)
+def create_category(category: CategoryCreate):
+    new_category = {"id": get_next_category_id(), **category.model_dump()}
+    categories_db.append(new_category)
+    return new_category
+
+
+@app.patch("/categories/{category_id}", response_model=Category)
+def update_category(category_id: int, category_update: CategoryUpdate):
+    category = next((c for c in categories_db if c["id"] == category_id), None)
+    if category is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    update_data = category_update.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        category[key] = value
+
+    return category
+
+
+@app.delete("/categories/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_category(category_id: int):
+    category = next((c for c in categories_db if c["id"] == category_id), None)
+    if category is None:
+        raise HTTPException(status_code=404, detail="Category not found")
+
+    categories_db.remove(category)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
