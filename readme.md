@@ -4,11 +4,9 @@ Proyecto del curso **Pruebas de Software**, Módulo III: construcción y prueba
 de una API REST con FastAPI. El proyecto contiene dos recursos:
 
 - **Productos** (`/products`) — CRUD original de la práctica del módulo.
-- **Categorías** (`/categories`) — CRUD que implementa punto por punto la
-  *Actividad Autónoma: API de Categorías con FastAPI* (ver PDF de la
-  actividad).
 
-Más contexto y notas de defensa/exposición en [`docs/notas_expo.md`](docs/notas_expo.md).
+- **Categorías** (`/categories`) — CRUD que implementa punto por punto la
+  *Actividad Autónoma: API de Categorías con FastAPI* 
 
 ---
 
@@ -17,13 +15,12 @@ Más contexto y notas de defensa/exposición en [`docs/notas_expo.md`](docs/nota
 ```bash
 python -m venv .venv
 
-# Windows
 .venv\Scripts\Activate.ps1
 
-# Linux/macOS
-source .venv/bin/activate
-
 python -m pip install fastapi "uvicorn[standard]" pytest httpx
+
+python.exe -m pip install --upgrade pip
+
 ```
 
 (El `requirements.txt` del repo ya trae estas dependencias congeladas con
@@ -44,15 +41,12 @@ Swagger interactivo disponible en: <http://127.0.0.1:8000/docs>
 ## 3. Ejecutar las pruebas
 
 ```bash
-pytest -v
-```
+python -m pytest -v.
 
-> ⚠️ Los archivos de prueba deben empezar con `test_` (no `test.`) para que
-> `pytest` los descubra automáticamente. `test/test_categories.py` sigue esta
-> convención. Ver `docs/notas_expo.md` para el detalle de un problema similar
-> que existía en `test/test.products.py`.
+python -m pytest test/test_categories.py -v
 
----
+python -m pytest -k "" -v
+
 
 ## 4. API de Categorías (Actividad Autónoma — Módulo III)
 
@@ -137,18 +131,6 @@ Resultado real de la ejecución (`pytest test/test_categories.py -v`):
 14 passed, 10 warnings in 0.84s
 ```
 
-(Las advertencias son deprecaciones de Pydantic v2 sobre `example=` en los
-esquemas de **Productos**, no afectan las pruebas de categorías; ver
-`docs/notas_expo.md`.)
-
 ---
 
-## 5. API de Productos
 
-CRUD previo del módulo sobre el recurso `Product` (`name`, `category`,
-`price`, `stock`, `available`), con endpoints `/products`, filtros por
-`category`, `available` y `search`. Pruebas en `test/test.products.py`.
-Consulta `docs/notas_expo.md` para el detalle de hallazgos pendientes de
-corregir en esta parte (nombre del archivo de pruebas, falta de endpoint
-`PUT`, código de respuesta del `DELETE`).
-# Modulo_3_Categorias_Santiago
