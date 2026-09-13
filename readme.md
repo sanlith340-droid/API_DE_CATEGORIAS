@@ -57,6 +57,7 @@ Módulo III mediante la construcción y prueba de un CRUD de categorías, sin
 base de datos real (datos en memoria en `app/database.py`).
 
 ### 4.1 Modelo de datos
+```
 
 | Campo | Tipo | Obligatorio | Regla principal |
 |---|---|---|---|
@@ -67,7 +68,8 @@ base de datos real (datos en memoria en `app/database.py`).
 
 Ejemplo de JSON:
 
-```json
+```
+json
 {
   "id": 1,
   "name": "Computadores",

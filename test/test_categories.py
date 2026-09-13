@@ -54,6 +54,7 @@ def test_id_invalido():
 
     assert response.status_code == 422
     assert "detail" in response.json()
+#http://127.0.0.1:8000/categories/abc
 
 
 # CA05 - Crear categoría válida

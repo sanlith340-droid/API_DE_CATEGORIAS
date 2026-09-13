@@ -9,4 +9,5 @@ products_db: list[dict] = [
 categories_db: list[dict] = [
     {"id": 1, "name": "Computadores", "description": "Equipos de cómputo", "active": True},
     {"id": 2, "name": "Periféricos", "description": "Accesorios y periféricos", "active": True},
+    {"id": 7, "name": "Periféricos", "description": "Accesorios y periféricos", "active": False},
 ]

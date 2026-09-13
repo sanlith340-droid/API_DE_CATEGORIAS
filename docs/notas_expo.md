@@ -8,7 +8,7 @@ defender tu trabajo frente al docente o los compañeros.
 
 ## 1. De qué trata la actividad (contexto que debes poder explicar)
 
-El PDF pide construir una **API REST de Categorías** para una tienda tecnológica,
+**API REST de Categorías** para una tienda tecnológica,
 sin base de datos real (todo en memoria), aplicando:
 
 - Modelos Pydantic (`CategoryCreate`, `CategoryUpdate`, `Category`)
@@ -20,11 +20,7 @@ sin base de datos real (todo en memoria), aplicando:
 **Actualización:** el proyecto original solo tenía la API de **Productos**
 (`Product`). Se agregó la API de **Categorías** (`Category`) siguiendo
 exactamente el modelo, endpoints y matriz de pruebas del PDF (ver sección 9
-de este documento). Ahora el proyecto cumple literalmente lo que pide el
-enunciado, y además conserva la API de Productos como parte adicional del
-módulo. Si te preguntan por qué existen dos recursos, esa es la explicación:
-Productos es la práctica guiada previa, Categorías es la actividad autónoma
-del PDF.
+de este documento). 
 
 ---
 
