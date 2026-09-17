@@ -136,3 +136,11 @@ Resultado real de la ejecución (`pytest test/test_categories.py -v`):
 ---
 
 
+
+# Módulo 4 —  Plan de pruebas y documentación de pruebas
+
+Se actulizo el docs para poner un plan de pruebas donde revisamos categorias y productos. asegurandonos que cumplan cosas como las RN Y RF. 
+
+
+
+
