@@ -1,150 +1,64 @@
-# Módulo 3 — Santiago Buitrago Goyeneche
+# TechStore Products & Categories API
 
-Proyecto del curso **Pruebas de Software**, Módulo III: construcción y prueba
-de una API REST con FastAPI. El proyecto contiene dos recursos:
+API REST desarrollada con FastAPI para el Mini Proyecto Evaluable del Módulo IV — Auditoría completa de pruebas.
 
-- **Productos** (`/products`) — CRUD original de la práctica del módulo.
-
-- **Categorías** (`/categories`) — CRUD que implementa punto por punto la
-  *Actividad Autónoma: API de Categorías con FastAPI* 
-
----
-
-## 1. Instalación
+## Instalación
 
 ```bash
 python -m venv .venv
-
+# Linux/macOS
+source .venv/bin/activate
+# Windows PowerShell
 .venv\Scripts\Activate.ps1
-
-python -m pip install fastapi "uvicorn[standard]" pytest httpx
-
-python.exe -m pip install --upgrade pip
-
-```
-
-(El `requirements.txt` del repo ya trae estas dependencias congeladas con
-`pip freeze`, así que también puedes instalar con:)
-
-```bash
 python -m pip install -r requirements.txt
 ```
 
-## 2. Ejecutar el servidor
+## Ejecución
 
 ```bash
 python -m uvicorn app.main:app --reload
 ```
 
-Swagger interactivo disponible en: <http://127.0.0.1:8000/docs>
+Documentación interactiva: <http://127.0.0.1:8000/docs>
 
-## 3. Ejecutar las pruebas
+## Endpoints principales
+
+| Método | Endpoint | Resultado |
+|---|---|---:|
+| POST | `/categories` | 201 |
+| GET | `/categories` | 200 |
+| GET | `/categories/{id}` | 200 / 404 |
+| DELETE | `/categories/{id}` | 204 / 404 |
+| POST | `/products` | 201 / 404 / 422 |
+| GET | `/products` | 200 |
+| GET | `/products/{id}` | 200 / 404 |
+| PUT | `/products/{id}` | 200 / 404 / 422 |
+| DELETE | `/products/{id}` | 204 / 404 |
+
+`PATCH` está disponible como extensión para actualizaciones parciales.
+
+## Contrato de datos
+
+Una categoría contiene `name`, obligatorio entre 3 y 60 caracteres. Los nombres duplicados se rechazan sin distinguir mayúsculas/minúsculas con HTTP 409.
+
+Un producto contiene `name` entre 3 y 80 caracteres, `price > 0`, `stock >= 0` y `category_id` asociado a una categoría existente. Los errores de validación responden 422 y una categoría inexistente responde 404.
+
+## Pruebas
 
 ```bash
-python -m pytest -v.
-
-python -m pytest test/test_categories.py -v
-
-python -m pytest -k "" -v
-
-
-## 4. API de Categorías (Actividad Autónoma — Módulo III)
-
-**Tecnologías:** Python · FastAPI · Pydantic · pytest · TestClient
-
-**Propósito:** aplicar de manera autónoma los conceptos de FastAPI del
-Módulo III mediante la construcción y prueba de un CRUD de categorías, sin
-base de datos real (datos en memoria en `app/database.py`).
-
-### 4.1 Modelo de datos
+python -m pytest -v
 ```
 
-| Campo | Tipo | Obligatorio | Regla principal |
-|---|---|---|---|
-| `id` | int | Generado | Identificador único, lo asigna el servidor |
-| `name` | str | Sí | 3 a 50 caracteres |
-| `description` | str \| None | No | Máximo 200 caracteres |
-| `active` | bool | No | `true` por defecto |
+Última ejecución verificada: **35 passed, 0 failed**.
 
-Ejemplo de JSON:
+## Auditoría
 
-```
-json
-{
-  "id": 1,
-  "name": "Computadores",
-  "description": "Equipos de cómputo",
-  "active": true
-}
-```
+La carpeta `docs/` contiene:
 
-Modelos Pydantic en `app/schemas.py`: `CategoryCreate`, `CategoryUpdate`
-(todos los campos opcionales, para PATCH) y `Category` (respuesta, incluye
-`id`).
+- `plan-pruebas.md`
+- `matriz-trazabilidad.md`
+- `casos-prueba.md`
+- `registro-defectos.md`
+- `informe-ejecucion.md`
 
-### 4.2 Endpoints
-
-| Método | Endpoint | Función | Código exitoso |
-|---|---|---|---|
-| GET | `/categories` | Listar categorías | 200 |
-| GET | `/categories/{category_id}` | Consultar una categoría | 200 |
-| POST | `/categories` | Crear categoría | 201 |
-| PATCH | `/categories/{category_id}` | Actualizar parcialmente | 200 |
-| DELETE | `/categories/{category_id}` | Eliminar categoría | 204 |
-| GET | `/categories?active=true` | Filtrar categorías activas | 200 |
-| GET | `/categories?search=comp` | Reto opcional: buscar por nombre (sin distinguir mayúsculas/minúsculas) | 200 |
-
-Reglas de error:
-
-- Categoría inexistente → **404** con `{"detail": "Category not found"}`.
-- Datos inválidos (Pydantic los rechaza) → **422**.
-
-### 4.3 Pruebas automatizadas
-
-Ubicadas en `test/test_categories.py`, implementadas con
-`fastapi.testclient.TestClient`. Incluyen las 12 pruebas de la matriz de la
-actividad (CA01–CA12) más 2 pruebas adicionales para el reto opcional de
-búsqueda:
-
-| ID | Escenario | Resultado esperado |
-|---|---|---|
-| CA01 | Listar categorías | 200 y lista JSON |
-| CA02 | Consultar existente | 200 |
-| CA03 | Consultar inexistente | 404 |
-| CA04 | ID inválido | 422 |
-| CA05 | Crear válida | 201 |
-| CA06 | Nombre demasiado corto | 422 |
-| CA07 | Falta nombre | 422 |
-| CA08 | Actualizar existente | 200 |
-| CA09 | Actualizar inexistente | 404 |
-| CA10 | Eliminar existente | 204 |
-| CA11 | Eliminar inexistente | 404 |
-| CA12 | Filtrar activas | 200, solo `active=true` |
-| extra | Buscar por nombre (con resultado) | 200 |
-| extra | Buscar por nombre (sin resultado) | 200, lista vacía |
-
-Se usa un fixture `autouse=True` (`reset_categories_db`) que restablece
-`categories_db` antes de cada prueba, garantizando que ninguna prueba dependa
-del resultado de otra.
-
-Resultado real de la ejecución (`pytest test/test_categories.py -v`):
-
-```
-14 passed, 10 warnings in 0.84s
-```
-
----
-
-
-
-# Módulo 4 —  Plan de pruebas y documentación de pruebas
-
-Se actulizo el docs para poner un plan de pruebas donde revisamos categorias y productos. asegurandonos que cumplan cosas como las RN Y RF. 
-
-
-# MINI PROYECTO EVALUABLE 
-
-
-
-
-
+La auditoría cubre RF01–RF12, RN01–RN08, 25 casos mínimos diseñados, retest y regresión.

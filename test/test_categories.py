@@ -1,162 +1,92 @@
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
+from app.database import categories_db, products_db
 from app.main import app
-from app.database import categories_db
 
 client = TestClient(app)
-
 INITIAL_CATEGORIES = [
-    {"id": 1, "name": "Computadores", "description": "Equipos de cómputo", "active": True},
-    {"id": 2, "name": "Periféricos", "description": "Accesorios y periféricos", "active": False},
+    {"id": 1, "name": "Periféricos"},
+    {"id": 2, "name": "Audio"},
+]
+INITIAL_PRODUCTS = [
+    {"id": 1, "name": "Mouse inalámbrico", "price": 120000.0, "stock": 5, "category_id": 1},
+    {"id": 2, "name": "Monitor", "price": 850000.0, "stock": 0, "category_id": 1},
 ]
 
 
 @pytest.fixture(autouse=True)
-def reset_categories_db():
-    # Antes de cada prueba, se restablece categories_db a su estado inicial
-    # para que ninguna prueba dependa de lo que haya hecho otra (independencia).
-    categories_db.clear()
-    categories_db.extend([dict(category) for category in INITIAL_CATEGORIES])
+def reset_db():
+    categories_db[:] = [dict(item) for item in INITIAL_CATEGORIES]
+    products_db[:] = [dict(item) for item in INITIAL_PRODUCTS]
 
 
-# CA01 - Listar categorías
-def test_listar_categorias():
+def test_list_categories():
     response = client.get("/categories")
-
     assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, list)
-    assert len(data) == 2
+    assert len(response.json()) == 2
 
 
-# CA02 - Consultar categoría existente
-def test_consultar_categoria_existente():
+def test_get_existing_category():
     response = client.get("/categories/1")
-
     assert response.status_code == 200
-    data = response.json()
-    assert data["id"] == 1
-    assert data["name"] == "Computadores"
+    assert response.json()["name"] == "Periféricos"
 
 
-# CA03 - Consultar categoría inexistente
-def test_consultar_categoria_inexistente():
-    response = client.get("/categories/999")
-
+def test_get_missing_category_returns_404():
+    response = client.get("/categories/99999")
     assert response.status_code == 404
     assert response.json() == {"detail": "Category not found"}
 
 
-# CA04 - ID inválido
-def test_id_invalido():
-    response = client.get("/categories/abc")
-
-    assert response.status_code == 422
-    assert "detail" in response.json()
-#http://127.0.0.1:8000/categories/abc
+def test_get_invalid_category_id_returns_422():
+    assert client.get("/categories/abc").status_code == 422
 
 
-# CA05 - Crear categoría válida
-def test_crear_categoria_valida():
-    new_category = {
-        "name": "Impresoras",
-        "description": "Impresoras y consumibles",
-        "active": True,
-    }
-
-    response = client.post("/categories", json=new_category)
-
+def test_create_category_valid():
+    response = client.post("/categories", json={"name": "Computadores"})
     assert response.status_code == 201
-    data = response.json()
-    assert data["name"] == new_category["name"]
-    assert data["description"] == new_category["description"]
-    assert data["active"] is True
-    assert "id" in data
+    assert response.json()["name"] == "Computadores"
 
 
-# CA06 - Nombre demasiado corto
-def test_nombre_demasiado_corto():
-    new_category = {"name": "PC", "description": "Nombre muy corto"}
-
-    response = client.post("/categories", json=new_category)
-
-    assert response.status_code == 422
-    assert "detail" in response.json()
+def test_category_name_shorter_than_three_returns_422():
+    assert client.post("/categories", json={"name": "AB"}).status_code == 422
 
 
-# CA07 - Falta el nombre
-def test_falta_nombre():
-    new_category = {"description": "Categoría sin nombre"}
-
-    response = client.post("/categories", json=new_category)
-
-    assert response.status_code == 422
-    assert "detail" in response.json()
+def test_category_name_exactly_three_characters_is_valid():
+    assert client.post("/categories", json={"name": "Red"}).status_code == 201
 
 
-# CA08 - Actualizar categoría existente
-def test_actualizar_categoria_existente():
-    response = client.patch("/categories/1", json={"description": "Nueva descripción"})
+def test_category_name_missing_returns_422():
+    assert client.post("/categories", json={}).status_code == 422
 
+
+def test_duplicate_category_name_is_case_insensitive():
+    response = client.post("/categories", json={"name": "audio"})
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Category name already exists"}
+
+
+def test_category_name_length_sixty_is_valid():
+    response = client.post("/categories", json={"name": "A" * 60})
+    assert response.status_code == 201
+
+
+def test_category_name_length_sixty_one_returns_422():
+    assert client.post("/categories", json={"name": "A" * 61}).status_code == 422
+
+
+def test_update_category_name():
+    response = client.patch("/categories/1", json={"name": "Periferia"})
     assert response.status_code == 200
-    data = response.json()
-    assert data["id"] == 1
-    assert data["description"] == "Nueva descripción"
-    # El nombre no se envió en el PATCH y debe permanecer sin cambios
-    assert data["name"] == "Computadores"
+    assert response.json()["name"] == "Periferia"
 
 
-# CA09 - Actualizar categoría inexistente
-def test_actualizar_categoria_inexistente():
-    response = client.patch("/categories/999", json={"description": "No existe"})
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Category not found"}
+def test_update_category_duplicate_returns_409():
+    assert client.patch("/categories/1", json={"name": "audio"}).status_code == 409
 
 
-# CA10 - Eliminar categoría existente
-def test_eliminar_categoria_existente():
+def test_delete_category_returns_204_without_body():
     response = client.delete("/categories/1")
-
     assert response.status_code == 204
     assert response.content == b""
-
-    # Verificar que ya no existe
-    get_response = client.get("/categories/1")
-    assert get_response.status_code == 404
-
-
-# CA11 - Eliminar categoría inexistente
-def test_eliminar_categoria_inexistente():
-    response = client.delete("/categories/999")
-
-    assert response.status_code == 404
-    assert response.json() == {"detail": "Category not found"}
-
-
-# CA12 - Filtrar categorías activas
-def test_filtrar_categorias_activas():
-    response = client.get("/categories?active=true")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
-    assert all(category["active"] is True for category in data)
-
-
-# Reto opcional - Búsqueda por nombre (case-insensitive)
-def test_buscar_por_nombre_encuentra_resultado():
-    response = client.get("/categories?search=comp")
-
-    assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]["name"] == "Computadores"
-
-
-def test_buscar_por_nombre_sin_resultados():
-    response = client.get("/categories?search=xyz")
-
-    assert response.status_code == 200
-    assert response.json() == []

@@ -1,59 +1,26 @@
-# Matriz de Trazabilidad
+# Matriz de trazabilidad
 
-Relaciona cada requisito funcional (RF) y regla de negocio (RN) del
-alcance con los casos de prueba (CP para productos, CA para categorías)
-que los verifican. El estado indica si el caso ya está automatizado en
-`test/` o si es una brecha identificada durante este ciclo.
-
-## Requisitos funcionales — Productos
-
-| ID requisito | Requisito | Caso(s) relacionado(s) | Estado |
+| ID | Requisito o regla | Casos relacionados | Cobertura |
 |---|---|---|---|
-| RF01 | Crear producto | CP001, CP002, CP003, CP005, CP006 | CP001–CP002 automatizados; CP003, CP005, CP006 pendientes |
-| RF02 | Consultar productos (listado y filtros) | CP007, CP008, CP009 | Automatizados (fallando por DEF-001) |
-| RF03 | Consultar producto por ID | CP010, CP011, CP012 | Automatizados |
-| RF04 | Actualizar producto | CP013, CP014, CP015 | Automatizados (CP013/CP015 fallando por DEF-002) |
-| RF05 | Eliminar producto | CP016, CP017 | CP016 automatizado (fallando por DEF-003); CP017 pendiente |
+| RF01 | Crear categoría válida | CP-CAT-01 | Cubierto |
+| RF02 | Listar categorías | CP-CAT-02 | Cubierto |
+| RF03 | Consultar categoría existente | CP-CAT-03 | Cubierto |
+| RF04 | Consultar categoría inexistente devuelve 404 | CP-CAT-04 | Cubierto |
+| RF05 | Crear producto con categoría existente | CP-PROD-01 | Cubierto |
+| RF06 | Listar productos | CP-PROD-02 | Cubierto |
+| RF07 | Consultar producto existente | CP-PROD-03 | Cubierto |
+| RF08 | Consultar producto inexistente devuelve 404 | CP-PROD-04 | Cubierto |
+| RF09 | Actualizar producto válido | CP-PROD-05 | Cubierto |
+| RF10 | Actualizar producto inexistente devuelve 404 | CP-PROD-06 | Cubierto |
+| RF11 | Eliminar producto existente | CP-PROD-07 | Cubierto |
+| RF12 | Eliminar producto inexistente devuelve 404 | CP-PROD-08 | Cubierto |
+| RN01 | Nombre de categoría entre 3 y 60 | CP-CAT-05, CP-CAT-06, CP-CAT-07 | Cubierto |
+| RN02 | Nombre de categoría único sin distinguir mayúsculas | CP-CAT-08 | Cubierto |
+| RN03 | Nombre de producto entre 3 y 80 | CP-PROD-09, CP-PROD-10 | Cubierto |
+| RN04 | Precio estrictamente mayor que 0 | CP-PROD-11, CP-PROD-12, CP-PROD-13 | Cubierto |
+| RN05 | Stock mayor o igual que 0 | CP-PROD-14, CP-PROD-15 | Cubierto |
+| RN06 | `category_id` debe existir | CP-PROD-16, CP-PROD-18 | Cubierto |
+| RN07 | Stock igual a 0 se acepta | CP-PROD-14 | Cubierto |
+| RN08 | Actualización mantiene validaciones de creación | CP-PROD-17, CP-PROD-18 | Cubierto |
 
-## Reglas de negocio — Productos
-
-| ID requisito | Regla | Caso(s) relacionado(s) | Estado |
-|---|---|---|---|
-| RN01 | El nombre del producto es obligatorio (2–100 caracteres) | CP005, CP006 | Pendientes de automatizar |
-| RN02 | El precio debe ser mayor que cero | CP002 | Automatizado |
-| RN03 | El stock no puede ser negativo | CP003, CP004 | Pendientes de automatizar |
-| RN04 | No se debe devolver como válido un producto inexistente | CP011 | Automatizado |
-| RN05 | No se debe eliminar un producto inexistente | CP017 | Pendiente de automatizar |
-
-## Requisitos funcionales — Categorías
-
-| ID requisito | Requisito | Caso(s) relacionado(s) | Estado |
-|---|---|---|---|
-| RF06 | Crear categoría | CA05, CA06, CA07 | Automatizados |
-| RF07 | Consultar categorías (listado y filtros) | CA01, CA12, CA13, CA14 | Automatizados |
-| RF08 | Consultar categoría por ID | CA02, CA03, CA04 | Automatizados |
-| RF09 | Actualizar categoría | CA08, CA09 | Automatizados |
-| RF10 | Eliminar categoría | CA10, CA11 | Automatizados |
-
-## Reglas de negocio — Categorías
-
-| ID requisito | Regla | Caso(s) relacionado(s) | Estado |
-|---|---|---|---|
-| RN06 | El nombre de la categoría es obligatorio (3–50 caracteres) | CA06, CA07 | Automatizados |
-| RN07 | No se debe devolver como válida una categoría inexistente | CA03 | Automatizado |
-| RN08 | No se debe eliminar una categoría inexistente | CA11 | Automatizado |
-
-## Brechas de cobertura detectadas
-
-Al construir esta matriz se identificaron los siguientes huecos, que se
-documentan en `casos-prueba.md` como casos pendientes de automatizar:
-
-- **RN01 / RN03 (productos):** no existía un test que probara nombre
-  vacío/corto ni stock negativo/frontera directamente sobre `POST
-  /products`; solo se cubría el precio negativo.
-- **RF05 / RN05 (productos):** no existía un caso para `DELETE
-  /products/{id}` con un ID inexistente (sí existe su equivalente para
-  categorías, CA11).
-
-Ningún requisito del alcance quedó sin al menos un caso asociado, ya sea
-automatizado o documentado como pendiente.
+**Resumen:** 20 requisitos/reglas trazados; 25 casos mínimos diseñados; automatización representativa en `test/`.
