@@ -142,5 +142,9 @@ Resultado real de la ejecución (`pytest test/test_categories.py -v`):
 Se actulizo el docs para poner un plan de pruebas donde revisamos categorias y productos. asegurandonos que cumplan cosas como las RN Y RF. 
 
 
+# MINI PROYECTO EVALUABLE 
+
+
+
 
 
