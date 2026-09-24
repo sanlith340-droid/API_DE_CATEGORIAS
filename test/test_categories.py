@@ -1,5 +1,6 @@
 # ═══════════════════════════════════════════════════════════════
-# Pruebas automatizadas · CATEGORÍAS  (RF01–RF04, RN01–RN02)
+# Pruebas automatizadas · CATEGORÍAS  
+# (RF01–RF04, RN01–RN02)
 # Cada test lleva su ID de caso → requisito (trazabilidad con docs/).
 # Estructura: Arrange (datos) → Act (petición) → Assert (esperado).
 # "EXTRA" = no está en casos-prueba.md (fuera del contrato o refuerzo).

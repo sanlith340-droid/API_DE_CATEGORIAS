@@ -71,7 +71,7 @@ Se combinan cuatro tipos de prueba sobre cada endpoint del inventario (sección 
 - **Positivas:** creación, listado, consulta, actualización y eliminación con datos válidos (ej. CP-CAT-01, CP-PROD-01, CP-PROD-05).
 - **Negativas:** IDs inexistentes, datos inválidos, categoría inexistente, duplicados (ej. CP-CAT-04, CP-CAT-08, CP-PROD-16).
 - **De frontera:** límites de longitud de nombre (3 y 60/80 caracteres), precio mínimo (0.01) y precio/stock justo por debajo del límite permitido (ej. CP-CAT-05/06/07, CP-PROD-11/12/13/14/15).
-- **Automatizadas:** toda la matriz de casos (`docs/casos-prueba.md`) está implementada en `test/test_categories.py` y `test/test_products.py`, ejecutable con `python -m pytest -v`, con fixtures `autouse=True` que reinician `categories_db` y `products_db` antes de cada prueba para evitar contaminación entre casos.
+- **Automatizadas:** toda la matriz de casos (`docs/casos-prueba.md`) está implementada en `test/test_categories.py` y `test/test_products.py`, ejecutable con `python -m pytest -v`, con fixtures `autouse=True`(un fixture que toma los datos necesarios) que reinician `categories_db` y `products_db` antes de cada prueba para evitar contaminación entre casos.
 
 ## 7. Ambiente y herramientas
 
